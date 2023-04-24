@@ -63,6 +63,10 @@ public class ItemCatalog {
         return prevUsers;
     }
 
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
     public boolean isHeld(){
         return this.holdUser != null;
     }
@@ -98,8 +102,6 @@ public class ItemCatalog {
     public synchronized String returnItem(){
         if(this.checkedOut){
             String a = currUser;
-            // Uncheck out
-//            this.prevUsers.add(currUser);
             this.currUser = null;
             this.dueDate = null;
             this.checkedOut = false;
@@ -108,13 +110,11 @@ public class ItemCatalog {
         return null;
     }
 
-    public void checkDueDate(){
-        if (this.dueDate.equals(LocalDate.now())){
-            // Uncheck out
-            this.prevUsers.add(this.currUser);
-            this.currUser = null;
-            this.dueDate = null;
-            this.checkedOut = false;
+    public boolean renew(){
+        if (this.dueDate.equals(LocalDate.now()) && this.holdUser == null){
+            this.dueDate = LocalDate.now().plusMonths(1);
+            return true;
         }
+        return false;
     }
 }

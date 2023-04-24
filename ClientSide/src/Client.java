@@ -43,6 +43,8 @@ public class Client extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Welcome");
+        Stage accountCreatorStage = new Stage();
+        new AccountCreator().start(accountCreatorStage);
 
         // ESTABLISH CONNECTION WITH SERVER
         try {
@@ -79,7 +81,6 @@ public class Client extends Application {
             return false;
         }
     }
-
     private void showLoginScene(Stage primaryStage) {
         // Create login scene
         GridPane loginGrid = new GridPane();

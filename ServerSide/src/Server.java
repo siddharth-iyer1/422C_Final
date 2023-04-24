@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.time.LocalDate;
 
 public class Server {
     private ArrayList<ItemCatalog> catalog;
@@ -90,6 +91,15 @@ public class Server {
 
                 while (true) {
                     // read incoming messages from client
+//                    LocalDate today = LocalDate.now();
+//                    for(ItemCatalog c : catalog){
+//                        if(c.getDueDate().equals(today)){
+//                            boolean renewed = c.renew();
+//                            if(!renewed) {
+//                                processCommands("Return", c.getTitle(), c.getCurrUser(), writer);
+//                            }
+//                        }
+//                    }
 
                     String message = reader.readLine();
                     if (message == null) {
