@@ -103,6 +103,7 @@ public class Server {
                     String username = parts[1];
                     String title = parts[2];
                     processCommands(command, title, username, writer);
+                    sendCatalogUpdate();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -150,9 +151,25 @@ public class Server {
                 case ("Return"):
                     for (ItemCatalog c : catalog) {
                         if (c.getTitle().equals(title)) {
-                            String prevUser = c.returnItem();
-                            System.out.println("Item returned: " + title);
-                            System.out.println("FINISHED");
+                            if(c.isHeld()){
+                                c.processHold();
+                                System.out.println("Item returned: " + title);
+                                System.out.println("Item checked out to hold user");
+                            }
+                            else {
+                                String prevUser = c.returnItem();
+                                System.out.println("Item returned: " + title);
+                                break;
+                            }
+                        }
+                    }
+                    sendCatalogUpdate();
+                    break;
+                case ("Hold"):
+                    for (ItemCatalog c : catalog) {
+                        if (c.getTitle().equals(title)) {
+                            c.holdItem(username);
+                            System.out.println("Item held: " + title);
                             break;
                         }
                     }

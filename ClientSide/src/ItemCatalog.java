@@ -1,5 +1,7 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class ItemCatalog {
     // Item Info
@@ -11,9 +13,10 @@ public class ItemCatalog {
     // Item Status
     private boolean checkedOut;
     private String currUser;
+    private String holdUser;
     private LocalDate lastCheckedOut;
     private LocalDate dueDate;
-    public ArrayList<String> prevUsers;
+    public CopyOnWriteArrayList<String> prevUsers;
 
     public ItemCatalog(String itemType, String title, String author, String desc) {
         this.itemType = itemType;
@@ -24,7 +27,7 @@ public class ItemCatalog {
         this.currUser = null;
         this.lastCheckedOut = null;
         this.dueDate = null;
-        this.prevUsers = new ArrayList<String>();
+        this.prevUsers = new CopyOnWriteArrayList<String>();
     }
 
     // Getters
@@ -56,18 +59,18 @@ public class ItemCatalog {
         return lastCheckedOut;
     }
 
-    public ArrayList<String> getPrevUsers() {
+    public CopyOnWriteArrayList<String> getPrevUsers() {
         return prevUsers;
+    }
+
+    public boolean isHeld(){
+        return this.holdUser != null;
     }
 
 
     // ADD AUTHENTICATION HERE TO checkOut and returnItem METHODS !!!
     public synchronized void checkOut(String name){
-        System.out.println("AOFJOWAO FJAWF OAJWOF JOAWJFO AWOFJ AWOF JA");
-        if(this.checkedOut){
-//            return false;
-        }
-        else{
+        if(!this.checkedOut){
             this.currUser = name;
             this.lastCheckedOut = LocalDate.now();
             this.dueDate = LocalDate.now().plusMonths(1);
@@ -76,21 +79,33 @@ public class ItemCatalog {
         }
     }
 
-    public synchronized void returnItem(){
-        System.out.println("AAAAAFJOJFIEJFJOEJFJEOFJEJOFJ");
+    public synchronized void holdItem(String name){
         if(this.checkedOut){
-            // Uncheck out
-            System.out.println("LOLOLOLOLOLOLOLOLOL");
-            this.prevUsers.add(currUser);
-            System.out.println("step 1");
-            this.currUser = null;
-            System.out.println("step 2");
-            this.dueDate = null;
-            System.out.println("step 3");
-            this.checkedOut = false;
-            System.out.println("step 4");
+            this.holdUser = name;
         }
-        System.out.println("DONE!!!!");
+    }
+
+    public synchronized void processHold(){
+        if(this.holdUser != null){
+            this.currUser = this.holdUser;
+            this.lastCheckedOut = LocalDate.now();
+            this.dueDate = LocalDate.now().plusMonths(1);
+            this.checkedOut = true;
+            this.holdUser = null;
+        }
+    }
+
+    public synchronized String returnItem(){
+        if(this.checkedOut){
+            String a = currUser;
+            // Uncheck out
+//            this.prevUsers.add(currUser);
+            this.currUser = null;
+            this.dueDate = null;
+            this.checkedOut = false;
+            return a;
+        }
+        return null;
     }
 
     public void checkDueDate(){

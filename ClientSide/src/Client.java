@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -69,11 +70,14 @@ public class Client extends Application {
             if("Authenticated".equals(response)) {
                 return true;
             }
+            else{
+                String e = reader.readLine(); // Garbage picks up json
+                return false;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
     private void showLoginScene(Stage primaryStage) {
@@ -118,6 +122,13 @@ public class Client extends Application {
             } else {
                 actiontarget.setText("Invalid username or password.");
             }
+        });
+
+        // Add exit button
+        Button exitBtn = new Button("Exit");
+        loginGrid.add(exitBtn, 1, 5);
+        exitBtn.setOnAction(e -> {
+            Platform.exit();
         });
 
         // Create login scene and add grid to it
@@ -169,6 +180,7 @@ public class Client extends Application {
                 final TableCell<ItemCatalog, Void> cell = new TableCell<ItemCatalog, Void>() {
 
                     private final Button btn = new Button();
+                    private final Button holdBtn = new Button();
 
                     {
                         btn.setOnAction((ActionEvent event) -> {
@@ -197,6 +209,22 @@ public class Client extends Application {
                                 writer.flush();
                             }
                         });
+                        holdBtn.setOnAction((ActionEvent event) -> {
+                            ItemCatalog data = getTableView().getItems().get(getIndex());
+                            if (data.isCheckedOut() && !data.getCurrUser().equals(username)) {
+                                PrintWriter writer = null;
+                                try {
+                                    writer = new PrintWriter(sock.getOutputStream(), true);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+
+                                // send message to server
+                                writer.println("Hold " + username + " " + data.getTitle());
+                                writer.flush();
+                            }
+                            holdBtn.setText("Held");
+                        });
                     }
 
                     @Override
@@ -212,8 +240,10 @@ public class Client extends Application {
                             }else if(!data.isCheckedOut()){
                                 btn.setText("Check Out");
                                 setGraphic(btn);
-                            }else{
-                                setGraphic(null);
+                            }else {
+                                holdBtn.setText("Hold");
+                                holdBtn.setVisible(true);
+                                setGraphic(new HBox(holdBtn));
                             }
                         }
                     }

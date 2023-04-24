@@ -13,6 +13,7 @@ public class ItemCatalog {
     // Item Status
     private boolean checkedOut;
     private String currUser;
+    private String holdUser;
     private LocalDate lastCheckedOut;
     private LocalDate dueDate;
     public CopyOnWriteArrayList<String> prevUsers;
@@ -62,6 +63,10 @@ public class ItemCatalog {
         return prevUsers;
     }
 
+    public boolean isHeld(){
+        return this.holdUser != null;
+    }
+
 
     // ADD AUTHENTICATION HERE TO checkOut and returnItem METHODS !!!
     public synchronized void checkOut(String name){
@@ -71,6 +76,22 @@ public class ItemCatalog {
             this.dueDate = LocalDate.now().plusMonths(1);
             this.checkedOut = true;
 //            return true;
+        }
+    }
+
+    public synchronized void holdItem(String name){
+        if(this.checkedOut){
+            this.holdUser = name;
+        }
+    }
+
+    public synchronized void processHold(){
+        if(this.holdUser != null){
+            this.currUser = this.holdUser;
+            this.lastCheckedOut = LocalDate.now();
+            this.dueDate = LocalDate.now().plusMonths(1);
+            this.checkedOut = true;
+            this.holdUser = null;
         }
     }
 
