@@ -66,11 +66,14 @@ public class Client extends Application {
             System.out.println("DEBUG: Sent authentication request to server.");
             String response = reader.readLine();
             System.out.println(response);
-            return "Authenticated".equals(response);
+            if("Authenticated".equals(response)) {
+                return true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
+        return false;
     }
 
     private void showLoginScene(Stage primaryStage) {

@@ -123,13 +123,14 @@ public class Server {
                         if (userMap.get(username).equals(title)) {
                             System.out.println("Authenticated");
                             writer.println("Authenticated");
-                            System.out.println("FINISHED");
                             sendCatalogUpdate();
                         } else {
                             System.out.println("Invalid password");
+                            writer.println("Invalid");
                         }
                     } else {
                         System.out.println("User does not exist");
+                        writer.println("Invalid");
                     }
                     break;
                 case ("NewAccount"):
